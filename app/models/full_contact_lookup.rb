@@ -16,16 +16,13 @@ class FullContactLookup < ActiveRecord::Base
           user_info = FullContact.person(email: email)
 
         rescue => e
-          logger.error "#{e}"
-          save_lookup(email, nil)
           # to preserve our rate limit, cache bad emails
+          logger.error "#{e}"
+          save_lookup(email, nil, e)
         end
 
         if user_info && user_info.status == 200
           save_lookup(email, user_info)
-        elsif user_info && user_info.status == 202
-          logger.info "#{user_info}"
-          return "#{user_info.message}"
         elsif user_info && user_info.status
           logger.info "#{user_info}"
           return "#{user_info}"
@@ -38,7 +35,7 @@ class FullContactLookup < ActiveRecord::Base
   private
 
   def self.save_lookup(email, data, error=nil)
-    @user = FullContactLookup.new(email: email, data: data)
+    @user = FullContactLookup.new(email: email, data: data, error: error)
     @user.save!
   end
 end

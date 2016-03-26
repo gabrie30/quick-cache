@@ -3,18 +3,18 @@ require "rails_helper"
 describe FullContactLookup do 
   describe "#by_email" do
 
-    it "if given an email already in the DB it will return the data" do 
+    it "will return the objects data property if email is already in the database" do 
       obj = FullContactLookup.new(email: "example@aol.com", data: { one: "1" })
       obj.save!
 
       expect(FullContactLookup.by_email("example@aol.com")).to eq({ one: "1" })
     end
 
-    it "will handle no arguments passed" do 
+    it "will handle the case when no arguments are passed" do 
       expect(FullContactLookup.by_email()).to eq(nil)
     end
 
-    it "will not accept emails that do not include the @ symbol" do 
+    it "will only accept emails that include the @ symbol" do 
       expect(FullContactLookup.by_email("jgabriels30gmail.com")).to eq(nil)
     end
 
